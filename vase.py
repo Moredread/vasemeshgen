@@ -5,13 +5,10 @@ import struct
 from numpy import cross, eye, dot
 from scipy.linalg import expm3, norm
 
-def rotate(input, axis, theta):
-    try:
-        return [rotate_v(v, axis, theta) in input]
-    except TypeError:
-        return rotate_v(input, axis, theta)
+def rotate_z_deg_all(input, degrees):
+    return [rotate_z_deg(v, degrees) for v in input]
 
-def rotate_v(v, axis, theta):
+def rotate(v, axis, theta):
     """Adapted from http://stackoverflow.com/questions/6802577/python-rotation-of-3d-vector"""
 
     def M(axis, theta):
@@ -73,10 +70,11 @@ def regular_polygon(radius, n, z=0.0):
     return result
 
 def main():
-    n = 20
-    height = 5
+    n = 100
+    height = 4
     step = height/n
-    result = [regular_polygon(1.0, 6, i*step) for i in range(n)]
+    polys = [regular_polygon(1.0, 6, i*step) for i in range(n)]
+    result = [rotate_z_deg_all(polys[i], i*360/(n-1)) for i in range(n)]
     t = triangulate(result)
     print("Generated {} triangles".format(len(t)))
     write_stl(t)
