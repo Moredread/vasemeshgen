@@ -30,7 +30,7 @@ def rotate_z_deg(v, angle):
     >>> abs(v_rot[2]) < 1e-10
     True
     """
-    return rotate_z(v, angle/360.*2*math.pi)
+    return rotate_z(v, (angle % 360)/360.*2*math.pi)
 
 def write_stl(triangles, name="out.stl"):
     with open(name, "wb") as f:
@@ -70,11 +70,11 @@ def regular_polygon(radius, n, z=0.0):
     return result
 
 def main():
-    n = 100
+    n = 1000
     height = 4
     step = height/n
-    polys = [regular_polygon(1.0, 6, i*step) for i in range(n)]
-    result = [rotate_z_deg_all(polys[i], i*360/(n-1)) for i in range(n)]
+    polys = [regular_polygon(1.0, 5, i*step) for i in range(n)]
+    result = [rotate_z_deg_all(polys[i], -i*180/(n-1)) for i in range(n)]
     t = triangulate(result)
     print("Generated {} triangles".format(len(t)))
     write_stl(t)
