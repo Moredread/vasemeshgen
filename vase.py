@@ -39,7 +39,7 @@ def write_stl(triangles, name="out.stl"):
 
         for p1, p2, p3 in triangles:
             n_ = np.cross(p2 - p1, p3 - p1)
-            n  = n_/np.linalg.norm(n_)
+            n  = -1*n_/np.linalg.norm(n_)
 
             f.write(struct.pack('fff', n[0], n[1], n[2]))
             for p in [p1, p2, p3]:
