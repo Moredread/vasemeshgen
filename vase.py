@@ -13,10 +13,10 @@ def rotate_z_deg_all(input, degrees):
 def rotate(v, axis, theta):
     """Adapted from http://stackoverflow.com/questions/6802577/python-rotation-of-3d-vector"""
 
-    def M(axis, theta):
+    def r(axis, theta):
         return expm3(cross(eye(3), axis / norm(axis) * theta))
 
-    return dot(M(axis, theta), v)
+    return dot(r(axis, theta), v)
 
 
 def rotate_z(v, theta):
@@ -63,6 +63,11 @@ def triangulate(shapes):
     return triangles
 
 
+def linear_interpolation(a, b, factor):
+    for x, y in zip(a, b):
+        yield x + factor * (y - x)
+
+
 def square(width, z=0.0):
     return regular_polygon(math.sqrt(width / 2.), 4, z)
 
@@ -78,6 +83,16 @@ def regular_polygon(radius, n, z=0.0):
     return result
 
 
+def interpolated_pentagon_vase():
+    n = 10
+    height = 4
+    step = height / n
+    polys = [list(linear_interpolation(regular_polygon(2.0, 5, i * step), regular_polygon(1.0, 5, i * step), i / n)) for
+             i in range(n)]
+    result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
+    return triangulate(result)
+
+
 def twisted_pentagon_vase():
     n = 1000
     height = 4
@@ -89,6 +104,7 @@ def twisted_pentagon_vase():
 
 def main():
     write_stl(twisted_pentagon_vase(), "twisted_pentagon_vase.stl")
+    write_stl(interpolated_pentagon_vase(), "interpolated_pentagon_vase.stl")
 
 
 if __name__ == "__main__":
