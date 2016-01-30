@@ -78,15 +78,17 @@ def regular_polygon(radius, n, z=0.0):
     return result
 
 
-def main():
+def twisted_pentagon_vase():
     n = 1000
     height = 4
     step = height / n
     polys = [regular_polygon(1.0, 5, i * step) for i in range(n)]
     result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
-    t = triangulate(result)
-    print("Generated {} triangles".format(len(t)))
-    write_stl(t)
+    return triangulate(result)
+
+
+def main():
+    write_stl(twisted_pentagon_vase(), "twisted_pentagon_vase.stl")
 
 
 if __name__ == "__main__":
