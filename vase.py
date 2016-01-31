@@ -6,10 +6,6 @@ from numpy import cross, eye, dot
 from scipy.linalg import expm3, norm
 
 
-def rotate_z_deg_all(input, degrees):
-    return [rotate_z_deg(v, degrees) for v in input]
-
-
 def rotate(v, axis, theta):
     """Adapted from http://stackoverflow.com/questions/6802577/python-rotation-of-3d-vector"""
 
@@ -21,6 +17,16 @@ def rotate(v, axis, theta):
 
 def rotate_z(v, theta):
     return rotate(v, np.array([0, 0, 1]), theta)
+
+
+def rotate_z_deg_all(input, degrees):
+    return [rotate_z_deg(v, degrees) for v in input]
+
+
+def split(poly, n=2):
+    for v1, v2 in zip(poly, poly[1:] + [poly[0]]):
+        for i in range(n):
+            yield v1 + (v2 - v1) * i / n
 
 
 def rotate_z_deg(v, angle):
@@ -71,10 +77,10 @@ def interpolate(a, b, factor):
 
 
 def square(width, z=0.0):
-    return poly(math.sqrt(width / 2.), 4, z)
+    return n_poly(math.sqrt(width / 2.), 4, z)
 
 
-def poly(radius, n, z=0.0):
+def n_poly(radius, n, z=0.0):
     start = np.array([radius, 0.0, z])
     angle = 360. / n
 
@@ -89,7 +95,7 @@ def interpolated_pentagon_vase():
     n = 10
     height = 4
     step = height / n
-    polys = [list(interpolate(poly(2.0, 5, i * step), poly(1.0, 5, i * step), i / n)) for i in range(n)]
+    polys = [list(interpolate(n_poly(2.0, 5, i * step), n_poly(1.0, 5, i * step), i / n)) for i in range(n)]
     result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
     return triangulate(result)
 
@@ -98,13 +104,23 @@ def twisted_pentagon_vase():
     n = 1000
     height = 4
     step = height / n
-    polys = [poly(1.0, 5, i * step) for i in range(n)]
+    polys = [n_poly(1.0, 5, i * step) for i in range(n)]
+    result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
+    return triangulate(result)
+
+
+def twisted_pentagon_vase_lowpoly():
+    n = 10
+    height = 4
+    step = height / n
+    polys = [split(n_poly(1.0, 5, i * step), 3) for i in range(n)]
     result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
     return triangulate(result)
 
 
 def main():
     write_stl(twisted_pentagon_vase(), "twisted_pentagon_vase.stl")
+    write_stl(twisted_pentagon_vase_lowpoly(), "twisted_pentagon_vase_lowpoly.stl")
     write_stl(interpolated_pentagon_vase(), "interpolated_pentagon_vase.stl")
 
 
