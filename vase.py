@@ -31,14 +31,14 @@ def split(poly, n=2):
 
 def rotate_z_deg(v, angle):
     """
-    >>> from util import almost_equal
+    >>> from util import approx_equal
     >>> v = np.array([1, 0, 0])
     >>> v_rot = rotate_z_deg(v, 90)
-    >>> almost_equal(v_rot[0], 0.0)
+    >>> approx_equal(v_rot[0], 0.0)
     True
-    >>> almost_equal(v_rot[1], 1.0)
+    >>> approx_equal(v_rot[1], 1.0)
     True
-    >>> almost_equal(v_rot[2], 0.0)
+    >>> approx_equal(v_rot[2], 0.0)
     True
     """
     return rotate_z(v, (angle % 360) / 360. * 2 * math.pi)
