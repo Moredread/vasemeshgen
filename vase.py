@@ -25,13 +25,14 @@ def rotate_z(v, theta):
 
 def rotate_z_deg(v, angle):
     """
+    >>> from util import almost_equal
     >>> v = np.array([1, 0, 0])
     >>> v_rot = rotate_z_deg(v, 90)
-    >>> abs(v_rot[0]) < 1e-10
+    >>> almost_equal(v_rot[0], 0.0)
     True
-    >>> abs(v_rot[1] - 1) < 1e-10
+    >>> almost_equal(v_rot[1], 1.0)
     True
-    >>> abs(v_rot[2]) < 1e-10
+    >>> almost_equal(v_rot[2], 0.0)
     True
     """
     return rotate_z(v, (angle % 360) / 360. * 2 * math.pi)
