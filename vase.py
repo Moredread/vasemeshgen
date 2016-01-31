@@ -37,11 +37,12 @@ def rotate_z_deg(v, angle):
     return rotate_z(v, (angle % 360) / 360. * 2 * math.pi)
 
 
-def write_stl(triangles, name="out.stl"):
-    with open(name, "wb") as f:
+def write_stl(triangles, filename="out.stl"):
+    with open(filename, "wb") as f:
         f.write(struct.pack('x' * 80))
         f.write(struct.pack('I', len(triangles)))
 
+        print("Writing {} triangles to {}".format(len(triangles), filename))
         for p1, p2, p3 in triangles:
             n_ = np.cross(p2 - p1, p3 - p1)
             n = -1 * n_ / np.linalg.norm(n_)
@@ -63,16 +64,16 @@ def triangulate(shapes):
     return triangles
 
 
-def linear_interpolation(a, b, factor):
+def interpolate(a, b, factor):
     for x, y in zip(a, b):
         yield x + factor * (y - x)
 
 
 def square(width, z=0.0):
-    return regular_polygon(math.sqrt(width / 2.), 4, z)
+    return poly(math.sqrt(width / 2.), 4, z)
 
 
-def regular_polygon(radius, n, z=0.0):
+def poly(radius, n, z=0.0):
     start = np.array([radius, 0.0, z])
     angle = 360. / n
 
@@ -87,8 +88,7 @@ def interpolated_pentagon_vase():
     n = 10
     height = 4
     step = height / n
-    polys = [list(linear_interpolation(regular_polygon(2.0, 5, i * step), regular_polygon(1.0, 5, i * step), i / n)) for
-             i in range(n)]
+    polys = [list(interpolate(poly(2.0, 5, i * step), poly(1.0, 5, i * step), i / n)) for i in range(n)]
     result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
     return triangulate(result)
 
@@ -97,7 +97,7 @@ def twisted_pentagon_vase():
     n = 1000
     height = 4
     step = height / n
-    polys = [regular_polygon(1.0, 5, i * step) for i in range(n)]
+    polys = [poly(1.0, 5, i * step) for i in range(n)]
     result = [rotate_z_deg_all(polys[i], -i * 180 / (n - 1)) for i in range(n)]
     return triangulate(result)
 
